@@ -37,6 +37,7 @@ const uzone_packed_t* last_zone;
 uint8_t last_year;
 urule_t cached_rules[MAX_CURRENT_RULES];
 
+uint8_t ustrneq(const char* string1, const char* string2, uint8_t n);
 uint8_t ustrneq(const char* string1, const char* string2, uint8_t n) {
 #ifndef UTZ_GLOBAL_COUNTERS
   uint8_t utz_i;
@@ -50,6 +51,7 @@ uint8_t ustrneq(const char* string1, const char* string2, uint8_t n) {
 }
 
 #define ustrncpy(dest, src, n) ustrnreplace(dest, src, 0, 0, n)
+char* ustrnreplace(char* dest, const char* src, char c, char* replacement, uint8_t n);
 char* ustrnreplace(char* dest, const char* src, char c, char* replacement, uint8_t n) {
 #ifndef UTZ_GLOBAL_COUNTERS
   uint8_t utz_i, utz_j;
@@ -87,7 +89,10 @@ uint8_t dayofweek(uint8_t y, uint8_t m, uint8_t d) {
 
 uint8_t is_leap_year(uint8_t y) {
 #if UYEAR_OFFSET == 2000
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wparentheses"
   if (y & 0x03 && y != 100 || y != 200) {
+#pragma GCC diagnostic pop
 #else
   if ((((UYEAR_TO_YEAR(y) % 4) == 0) && ((UYEAR_TO_YEAR(y) % 100) != 0)) || ((UYEAR_TO_YEAR(y) % 400) == 0)) {
 #endif
@@ -96,6 +101,7 @@ uint8_t is_leap_year(uint8_t y) {
   return UFALSE;
 }
 
+uint8_t days_in_month(uint8_t y, uint8_t m);
 uint8_t days_in_month(uint8_t y, uint8_t m) {
   static const uint8_t days_in_month_nonleap[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   if (m == 2 && is_leap_year(y)) {
@@ -118,9 +124,6 @@ int16_t udatetime_cmp(udatetime_t* dt1, udatetime_t* dt2) {
   ret = dt1->time.minute - dt2->time.minute; if(ret != 0) { return ret; }
   ret = dt1->time.second - dt2->time.second; if(ret != 0) { return ret; }
   return 0;
-}
-
-int32_t udatetime_unix(udatetime_t* dt) {
 }
 
 void unpack_rule(const urule_packed_t* rule_in, uint8_t cur_year, urule_t* rule_out) {
@@ -164,6 +167,7 @@ void unpack_rule(const urule_packed_t* rule_in, uint8_t cur_year, urule_t* rule_
   rule_out->offset_hours += rule_in->offset_hours;
 }
 
+void rulecpy(urule_t* dest, urule_t* src);
 void rulecpy(urule_t* dest, urule_t* src) {
 #ifndef UTZ_GLOBAL_COUNTERS
   uint8_t utz_i;
@@ -259,7 +263,7 @@ void get_zone_by_name(char* name, uzone_t* zone_out) {
 #ifndef UTZ_GLOBAL_COUNTERS
   uint16_t utz_k;
 #endif
-  const char* zone = zone_names;
+  const char* zone = (const char*) zone_names;
   for (utz_k = 0; utz_k < NUM_ZONE_NAMES; utz_k++) {
     if (ustrneq(zone, name, MAX_ZONE_NAME_LEN)) {
       unpack_zone(&zone_defns[get_next(&zone)], name, zone_out);
