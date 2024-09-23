@@ -2,12 +2,12 @@
 
 #pragma once
 
-const urule_packed_t zone_rules[20];
-const char zone_abrevs[224];
+extern const urule_packed_t zone_rules[20];
+extern const char zone_abrevs[224];
 
 #define MAX_ABREV_FORMATTER_LEN 11
 
-const uzone_packed_t zone_defns[46];
+extern const uzone_packed_t zone_defns[46];
 #define UTZ_PAGO_PAGO      &zone_defns[  0]
 #define UTZ_HONOLULU       &zone_defns[  1]
 #define UTZ_ANCHORAGE      &zone_defns[  2]
@@ -58,4 +58,4 @@ const uzone_packed_t zone_defns[46];
 #define NUM_ZONE_NAMES 46
 #define MAX_ZONE_NAME_LEN 10
 
-const unsigned char zone_names[506];
+extern const unsigned char zone_names[506];
