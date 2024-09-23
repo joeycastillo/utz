@@ -182,7 +182,12 @@ class Zone(Entry):
         return self.name == other.name
 
     def __lt__(self, other):
-        return self.name < other.name
+        _, sh, sm = parse_h_m(self.gmtoff)
+        _, oh, om = parse_h_m(other.gmtoff)
+        if sh == oh:
+            return sm < om
+        else:
+            return sh < oh
 
     def pack(self, rule_groups, rule_group_starts, formatters):
         if self.until is not None:
@@ -417,7 +422,8 @@ class TimeZoneDatabase(object):
         c_buf.append('PLACEHOLDER')
         total_char = 0
         max_char = 0
-        for i, (name, index) in enumerate(sorted(aliases.items())):
+        # enumerate sorting by index
+        for i, (name, index) in enumerate(sorted(aliases.items(), key=lambda x: x[1])):
             char = []
             orig_name = name
             name = name.replace("'", '')
