@@ -1,5 +1,6 @@
-#ifndef _ZONES_H
-#define _ZONES_H
+#include "utz.h"
+
+#pragma once
 
 const urule_packed_t zone_rules[20];
 const char zone_abrevs[224];
@@ -58,4 +59,3 @@ const uzone_packed_t zone_defns[46];
 #define MAX_ZONE_NAME_LEN 10
 
 const unsigned char zone_names[506];
-#endif /* _ZONES_H */
