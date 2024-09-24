@@ -228,6 +228,11 @@ char get_current_offset(uzone_t* zone, udatetime_t* datetime, uoffset_t* offset)
 
   offset->minutes = zone->offset.minutes;
   offset->hours = zone->offset.hours;
+
+  if (zone->rules_len == 0) {
+    return 'S';
+  }
+
   rule = get_active_rule(cached_rules, datetime);
   offset->hours += rule->offset_hours;
   return rule->letter;
