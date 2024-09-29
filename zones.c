@@ -166,7 +166,7 @@ const uzone_packed_t zone_defns[46] = {
 
 const unsigned char zone_names[506] = {
                'P','O',' ','S','a','n','&','o','a','\0',   0, // Pago Pago
-               'P','O',' ','H','N','L','U','L','U','\0',   1, // Honolulu
+               'P','O',' ','h','N','L','U','L','U','\0',   1, // Honolulu
                'N','A',' ','A','n','c','h','r','g','\0',   2, // Anchorage
                'N','A',' ','S','e','a','t','t','L','\0',   3, // Los Angeles
                'N','A',' ','D','e','n','v','e','r','\0',   4, // Denver
@@ -174,7 +174,7 @@ const unsigned char zone_names[506] = {
                'N','A',' ','C','h','c','a','g','o','\0',   6, // Chicago
                'N','A',' ','R','e','g','i','n','a','\0',   7, // Regina
                'N','A',' ','N','Y','o','r','k',' ','\0',   8, // New York
-               'N','A',' ','H','a','L','i','f','a','\0',   9, // Halifax
+               'N','A',' ','h','a','L','i','f','a','\0',   9, // Halifax
                'S','A',' ','n','&','n','a','U','s','\0',  10, // Manaus
                'S','A',' ','S','t','i','a','g','o','\0',  11, // Santiago
                'S','A',' ','S','a','o','P','L','o','\0',  12, // Sao Paulo
@@ -187,18 +187,18 @@ const unsigned char zone_names[506] = {
                'M','E',' ','C','a','i','r','o',' ','\0',  19, // Cairo
                'A','F','R','n','&','a','p','t','o','\0',  20, // Maputo
                'M','E',' ','1','s','r','a','e','L','\0',  21, // Jerusalem
-               'E','U','R','H','L','s','n','k','i','\0',  22, // Helsinki
+               'E','U','R','h','L','s','n','k','i','\0',  22, // Helsinki
                'A','F','R','N','a','i','r','o','b','\0',  23, // Nairobi
                'M','E',' ','R','y','a','d','h',' ','\0',  24, // Riyadh
                'R','U','S','n','&','s','c','o','u','\0',  25, // Moscow
                'M','E',' ','+','e','h','r','a','n','\0',  26, // Tehran
-               'M','E',' ',' ','D','u','b','a','i','\0',  27, // Dubai
+               'M','E',' ',' ','d','u','b','a','i','\0',  27, // Dubai
                ' ',' ',' ',' ','1','n','d','I','a','\0',  28, // Kolkata
                ' ',' ',' ',' ','N','e','p','a','L','\0',  29, // Kathmandu
-               ' ',' ',' ','8','u','r','n','7','a','\0',  30, // Yangon
+               ' ',' ',' ','8','u','r','n','&','a','\0',  30, // Yangon
                ' ',' ',' ','B','n','g','k','O','k','\0',  31, // Bangkok
                ' ',' ',' ','S','h','n','g','h','i','\0',  32, // Shanghai
-               ' ',' ',' ','H','o','n','K','o','n','\0',  33, // Hong Kong
+               ' ',' ',' ','h','o','n','K','o','n','\0',  33, // Hong Kong
                ' ',' ',' ','S','n','g','p','o','r','\0',  34, // Singapore
                'A','U','S',' ','P','e','r','t','h','\0',  35, // Perth
                ' ',' ',' ',' ','T','o','k','y','o','\0',  36, // Tokyo
@@ -206,7 +206,7 @@ const unsigned char zone_names[506] = {
                'A','U','S','D','a','r','u','i','n','\0',  38, // Darwin
                'A','U','S','A','d','L','a','i','d','\0',  39, // Adelaide
                'A','U','S','B','r','s','b','N','e','\0',  40, // Brisbane
-               'A','U','S',' ','H','o','b','r','t','\0',  41, // Hobart
+               'A','U','S',' ','h','o','b','r','t','\0',  41, // Hobart
                'A','U','S','S','y','0','n','e','y','\0',  42, // Sydney
                'P','O',' ',' ','G','u','a','N','7','\0',  43, // Guam
                'P','O',' ','+','a','r','a','w','a','\0',  44, // Tarawa
