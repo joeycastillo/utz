@@ -429,7 +429,7 @@ class TimeZoneDatabase(object):
             name = name.replace("-", '')
             name = name.replace(".", '')
             name = name.replace(",", '')
-            h_buf.append(("#define UTZ_" + name.upper() + ' '*(max_len+4-len(name)) + '&zone_defns[%3d]') % index)
+            h_buf.append(("#define UTZ_" + name.upper() + ' '*(max_len+4-len(name)) + '(%2d)') % index)
             name = orig_name.replace('_', ' ')
             short_name = ''.join(name.split(' '))[:9]
             short_name = ' '*(9-len(short_name)) + short_name
