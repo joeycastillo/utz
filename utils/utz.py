@@ -8,7 +8,6 @@ eV Quirk
 from collections import OrderedDict
 from datetime import date
 from functools import total_ordering
-from sets import Set
 
 CURRENT_YEAR = date.today().year
 MAX_FMT_LEN = 5
@@ -17,6 +16,8 @@ TZ_TYPES = ['Rule', 'Zone', 'Link']
 
 DAY_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+OFFSET_INCREMENT = 15
 
 
 class Entry(object):
@@ -164,7 +165,7 @@ class Rule(Entry):
                 on_d,                      # day of month unless 0, then assume format is "last dayOfWeek"
                 at_z,                      # time of day, timezone (UTC / LOCAL)
                 at_H,                      # time of day, hours
-                at_M / 15,                 # time of day, minutes, in 15 minute increments
+                at_M / OFFSET_INCREMENT,   # time of day, minutes, in 15 minute increments
                 l,                         # (-, S, D)
                 MONTHS.index(self._in)+1,  # month
                 off_H,                     # offset in hours
@@ -186,7 +187,7 @@ class Zone(Entry):
 
     def pack(self, rule_groups, rule_group_starts, formatters):
         if self.until is not None:
-            print self  # FIXME warnings
+            print(self)
 
         _, h, m = parse_h_m(self.gmtoff)
 
@@ -262,7 +263,7 @@ class TimeZoneDatabase(object):
 
     def strip_historical(self):
         """ Strip out historical rules and zones """
-        rule_group_names = Set()
+        rule_group_names = set()
 
         filtered_rules = []
         for rule in self.rules:
@@ -278,7 +279,9 @@ class TimeZoneDatabase(object):
             # We might have pruned all the rules for this zone above
             if zone.rules != '-' and zone.rules not in rule_group_names:
                 zone.rules = '-'
-                if '%' in zone.format:
+                if '%z' in zone.format:
+                    zone.format = zone.format.replace('%z', 'S')
+                elif '%' in zone.format:
                     zone.format = zone.format % 'S'
 
             if zone.until is None or int(zone.until[:4]) >= CURRENT_YEAR:
@@ -303,6 +306,13 @@ class TimeZoneDatabase(object):
         return rule_groups
 
     def pack(self, h_filename, included_aliases=None):
+        if included_aliases is None:
+            included_aliases = []
+
+        # Always include Etc/UTC in the whitelist
+        if 'Etc/UTC' not in included_aliases:
+            included_aliases.append('Etc/UTC')
+
         whitelisted_zones = []
         for alias in included_aliases:
             for link in self.links:
@@ -317,6 +327,12 @@ class TimeZoneDatabase(object):
                 if zone.rules != '-':
                     whitelisted_rules.append(zone.rules)
         self.zones = zones
+
+        # Ensure Etc/UTC is in self.zones
+        if not any(zone.name == 'Etc/UTC' for zone in self.zones):
+            self.zones.append(
+                Zone('Etc/UTC', '0', '-', 'UTC', until=None)
+            )
 
         rules = []
         for ruleset in self.rules:
@@ -349,7 +365,7 @@ class TimeZoneDatabase(object):
                 idx = idx + 1
         c_buf[c_buf.index('PLACEHOLDER')] = 'const urule_packed_t zone_rules[%d] = {' % idx
         c_buf.append('};')
-        h_buf.append('const urule_packed_t zone_rules[%d];' % idx)
+        h_buf.append('extern const urule_packed_t zone_rules[%d];' % idx)
 
         return group_idx
 
@@ -368,8 +384,11 @@ class TimeZoneDatabase(object):
         max_char = 0
         for orig_fmt, packed_fmt in packed_formatters.items():
             packed_formatters[orig_fmt]['start'] = total_char
-            if '%' in packed_fmt['fmt']:
+            if '%z' in packed_fmt['fmt']:
+                    packed_fmt['fmt'] = packed_fmt['fmt'].replace('%z', '%c')
+            elif '%' in packed_fmt['fmt']:
                 packed_fmt['fmt'] = packed_fmt['fmt'] % '%c'
+
             c_buf.append("'%s','\\0'," % "','".join([c for c in packed_fmt['fmt']]))
             total_char += len(packed_fmt['fmt']) + 1
             if len(packed_fmt['fmt']) > max_char:
@@ -378,7 +397,7 @@ class TimeZoneDatabase(object):
         c_buf.append('};')
         c_buf.append('')
         c_buf[c_buf.index('PLACEHOLDER')] = 'const char zone_abrevs[%d] = {' % total_char
-        h_buf.extend(['const char zone_abrevs[%d];' % total_char, ''])
+        h_buf.extend(['extern const char zone_abrevs[%d];' % total_char, ''])
         h_buf.extend(['#define MAX_ABREV_FORMATTER_LEN %d' % max_char, ''])
 
         for zone in sorted(self.zones):
@@ -387,7 +406,7 @@ class TimeZoneDatabase(object):
                 packed_zones[packed_zone] = [zone]
             else:
                 packed_zones[packed_zone].append(zone)
-            zone_indexes[zone.name] = packed_zones.keys().index(packed_zone)
+            zone_indexes[zone.name] = list(packed_zones.keys()).index(packed_zone)
 
         c_buf.append('const uzone_packed_t zone_defns[%d] = {' % len(packed_zones))
         for packed_zone, srcs in packed_zones.items():
@@ -395,7 +414,7 @@ class TimeZoneDatabase(object):
                 c_buf.append('// ' + src_zone._src)
             c_buf.append(packed_zone)
         c_buf.append('};')
-        h_buf.append('const uzone_packed_t zone_defns[%d];' % len(packed_zones))
+        h_buf.append('extern const uzone_packed_t zone_defns[%d];' % len(packed_zones))
 
         return zone_indexes
 
@@ -417,14 +436,17 @@ class TimeZoneDatabase(object):
         c_buf.append('PLACEHOLDER')
         total_char = 0
         max_char = 0
-        for i, (name, index) in enumerate(sorted(aliases.items())):
+        # for i, (name, index) in enumerate(sorted(aliases.items())):
+        # enumerate sorting by index
+        for i, (name, index) in enumerate(sorted(aliases.items(), key=lambda x: x[1])):
             char = []
             orig_name = name
             name = name.replace("'", '')
             name = name.replace("-", '')
             name = name.replace(".", '')
             name = name.replace(",", '')
-            h_buf.append(("#define UTZ_" + name.upper() + ' '*(max_len+4-len(name)) + '&zone_defns[%3d]') % index)
+            h_buf.append(("#define UTZ_" + name.upper() + ' '*(max_len+4-len(name)) + '%d') % index)
+
             name = orig_name.replace('_', ' ')
             for c in name:
                 if c == "'":
@@ -439,4 +461,4 @@ class TimeZoneDatabase(object):
         c_buf[c_buf.index('PLACEHOLDER')] = 'const unsigned char zone_names[%d] = {' % total_char
         c_buf.append('};')
         h_buf.extend(['', '#define NUM_ZONE_NAMES %d' % len(aliases), '#define MAX_ZONE_NAME_LEN %d' % max_char, ''])
-        h_buf.append('const unsigned char zone_names[%d];' % total_char)
+        h_buf.append('extern const unsigned char zone_names[%d];' % total_char)

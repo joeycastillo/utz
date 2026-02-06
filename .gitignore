@@ -11,4 +11,6 @@
 *.pyc
 build
 *.o
-example
+example*
+test/test_timezone*
+vendor/tzdata/*

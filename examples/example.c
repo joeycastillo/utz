@@ -4,8 +4,8 @@
  */
 
 #include <stdio.h>
-#include "utz.h"
-#include "zones.h"
+#include "../utz.h"
+#include "../zones.h"
 #include "utility.h"
 
 int main() {

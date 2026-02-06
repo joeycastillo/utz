@@ -28,25 +28,25 @@ def process(dir, region, include, whitelist):
 
     for r in region:
         fn = os.path.join(dir, r)
-        with open(fn) as f:
+        with open(fn, encoding='utf-8') as f:
             db.load(f)
 
     for i in include:
-        with open(i) as f:
+        with open(i, encoding='utf-8') as f:
             db.load(f)
 
     db.strip_historical()
 
     included_zones = []
     if whitelist:
-        with open(whitelist) as f:
+        with open(whitelist, encoding='utf-8') as f:
             for zone in f:
                 included_zones.append(zone.strip())
 
     c_buf, h_buf = db.pack(H_NAME, included_zones)
-    with open(H_NAME, 'w') as hf:
+    with open(H_NAME, 'w', encoding='utf-8') as hf:
         hf.write(h_buf)
-    with open(C_NAME, 'w') as cf:
+    with open(C_NAME, 'w', encoding='utf-8') as cf:
         cf.write(c_buf)
 
 

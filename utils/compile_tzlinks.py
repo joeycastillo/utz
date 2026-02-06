@@ -6,7 +6,7 @@ eV Quirk
 
 import unicodedata
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from geopy.geocoders import Nominatim
 from tzwhere import tzwhere
 

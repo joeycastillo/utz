@@ -92,7 +92,7 @@ typedef struct uzone_packed_t {
   int8_t offset_inc_minutes;
   uint8_t rules_idx;
   uint8_t rules_len;
-  uint16_t abrev_formatter;
+  uint8_t  abrev_formatter;
 } uzone_packed_t;
 
 /** @struct urule_packed_t
