@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "utz.h"
 #include "zones.h"
 #include "utility.h"
@@ -35,7 +36,7 @@ int main() {
 
   unpack_zone(&zone_defns[15], "", &utc_zone);
   get_current_offset(&utc_zone, &dt, &offset);
-  printf("System zone: %s (offset %d:%02d)\n", utc_zone.abrev_formatter, offset.hours, offset.minutes);
+  printf("System zone: %s (offset %d:%02d)\n", utc_zone.abrev_formatter, offset.hours, abs(offset.minutes));
   uzone_t local_zone;
   unpack_zone(&zone_defns[39], "", &local_zone);
 
@@ -63,7 +64,7 @@ int main() {
     local_time = watch_utility_date_time_convert_zone(system_time, 0, offset.hours * 3600 + offset.minutes * 60);
     printf("%02d:%02d:%02d %02d/%02d/%02d ", local_time.unit.hour, local_time.unit.minute, local_time.unit.second, local_time.unit.month, local_time.unit.day, WATCH_RTC_REFERENCE_YEAR + local_time.unit.year);
     printf(local_zone.abrev_formatter, c);
-    printf(" (offset: %d:%02d)\n", offset.hours, offset.minutes);
+    printf(" (offset: %d:%02d)\n", offset.hours, abs(offset.minutes));
 
     system_time.unit.minute += 15;
     if (system_time.unit.minute >= 60) {
