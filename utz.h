@@ -76,7 +76,7 @@ typedef struct udatetime_t {
 
 /** @brief timezone offset type */
 typedef struct uoffset_t {
-  uint8_t minutes; // 0 to 59
+  int8_t minutes; // -59 to 59, same sign as hours
   int8_t hours; // -12 to +12
 } uoffset_t;
 

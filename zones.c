@@ -97,7 +97,7 @@ const uzone_packed_t zone_defns[46] = {
 // America/Sao_Paulo	-3:00	Brazil	-03/-02
 {-12,   0,   0,  59},
 // America/St_Johns	-3:30	Canada	N%sT
-{-10,   6,   2,  67},
+{-14,   6,   2,  67},
 // America/Nuuk	-2:00	EU	-02/-01
 { -8,  10,   2,  72},
 // 	Etc/UTC		0	-	UTC

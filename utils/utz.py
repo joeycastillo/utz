@@ -79,8 +79,11 @@ def parse_h_m(time):
 
     if ':' in time:
         h, m = time.split(':')
+        negative = h.strip().startswith('-')
         h = int(h)
         m = int(m)
+        if negative:
+            m = -m  # "-3:30" is -3 h and -30 min, not -3 h + 30 min
     else:
         h = int(time)
     return z, h, m
